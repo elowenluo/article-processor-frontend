@@ -83,7 +83,7 @@ export const useArticleProcessing = () => {
       if (response.status === "completed") {
         setState((prev) => ({
           ...prev,
-          articles: response.articles || [],
+          articles: response.results || [],
           isProcessing: false,
         }));
       } else if (response.status === "error") {
@@ -131,25 +131,16 @@ export const useArticleProcessing = () => {
     if (state.articles.length === 0) return;
 
     try {
-      const articlesText = state.articles
-        .map((article) => {
-          return [
-            `Title: ${article.title}`,
-            ``,
-            `Summary: ${article.summary}`,
-            ``,
-            `Tags: ${article.tags.join(", ")}`,
-            `Categories: ${article.categories.join(", ")}`,
-            ``,
-            `Content:`,
-            article.content,
-            ``,
-            `URL: ${article.url}`,
-            `-------------------`,
-            ``,
-          ].join("\n");
-        })
-        .join("\n");
+      const articlesText = JSON.stringify(
+        state.articles.map((article) => {
+          return {
+            ...article,
+            tags: article.tags.join("、"),
+          };
+        }),
+        null,
+        2
+      );
 
       navigator.clipboard.writeText(articlesText);
       alert("All results copied to clipboard!");

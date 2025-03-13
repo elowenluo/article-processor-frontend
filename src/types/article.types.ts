@@ -1,9 +1,7 @@
 export interface Article {
-  id: string;
-  url: string;
   title: string;
-  summary: string;
   content: string;
+  summary: string;
   tags: string[];
   categories: string[];
 }

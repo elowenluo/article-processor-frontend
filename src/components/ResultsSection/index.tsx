@@ -39,7 +39,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         <div className={styles.resultsList}>
           {articles.map((article, index) => (
             <ResultCard
-              key={article.id}
+              key={article.title}
               article={article}
               index={index}
               onDelete={() => onDeleteArticle(index)}

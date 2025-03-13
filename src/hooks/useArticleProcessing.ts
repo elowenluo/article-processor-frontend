@@ -37,12 +37,12 @@ export const useArticleProcessing = () => {
 
         setState((prev) => ({
           ...prev,
-          jobId: response.jobId ?? null,
+          jobId: response.id ?? null,
         }));
 
         // Poll for results
-        if (response.jobId) {
-          pollJobResults(response.jobId);
+        if (response.id) {
+          pollJobResults(response.id);
         }
       } catch (error) {
         setState((prev) => ({
@@ -86,7 +86,7 @@ export const useArticleProcessing = () => {
           articles: response.results || [],
           isProcessing: false,
         }));
-      } else if (response.status === "error") {
+      } else if (response.status === "failed") {
         setState((prev) => ({
           ...prev,
           isProcessing: false,

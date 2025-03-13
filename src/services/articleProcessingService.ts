@@ -1,6 +1,7 @@
 import {
   ApiConfig,
   ProcessArticlesResponse,
+  ProcessArticlesStatusResponse
 } from "../types";
 
 const BACKEND_API_URL =
@@ -50,7 +51,7 @@ export const processArticles = async (
  */
 export const getJobResults = async (
   jobId: string
-): Promise<ProcessArticlesResponse> => {
+): Promise<ProcessArticlesStatusResponse> => {
   try {
     const response = await fetch(`${BACKEND_API_URL}/processStatus/${jobId}`, {
       method: "GET",
@@ -59,7 +60,7 @@ export const getJobResults = async (
       },
     });
 
-    const data = (await response.json()) as ProcessArticlesResponse;
+    const data = (await response.json()) as ProcessArticlesStatusResponse;
 
     return data;
   } catch (error) {

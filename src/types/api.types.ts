@@ -17,6 +17,12 @@ export interface ProcessArticlesRequest {
 }
 
 export interface ProcessArticlesResponse {
+  jobId: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  message: string;
+}
+
+export interface ProcessArticlesStatusResponse {
   id: string;
   status: "pending" | "processing" | "completed" | "failed";
   urls: string[];

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  article-processor-frontend:
+    image: sisuad/article-processorfrontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - TZ=Asia/Shanghai # 设置时区为UTC+8（亚洲/上海）
+    restart: unless-stopped
+    volumes:
+      - ./public:/app/public
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

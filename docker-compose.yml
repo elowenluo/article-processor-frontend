@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   article-processor-frontend:
-    image: sisuad/article-processorfrontend:latest
+    image: sisuad/article-processor-frontend:latest
     ports:
       - "3000:3000"
     environment:

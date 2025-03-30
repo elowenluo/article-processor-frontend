@@ -1,6 +1,5 @@
 import React from "react";
 import Select from "../../UI/Select";
-import Input from "../../UI/Input";
 import styles from "./StandardApiSection.module.scss";
 import { ApiProvider } from "../../../types";
 

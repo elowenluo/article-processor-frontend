@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Select from "../../UI/Select";
 import Input from "../../UI/Input";
 import styles from "./StandardApiSection.module.scss";
@@ -70,18 +70,6 @@ const StandardApiSection: React.FC<StandardApiSectionProps> = ({
           disabled={!provider}
           aria-label="Model select"
         />
-
-        {showCustomModelInput && (
-          <Input
-            id="custom-model"
-            label="Custom Model Name:"
-            value={customModelName}
-            onChange={(e) => handleCustomModelChange(e.target.value)}
-            placeholder="Enter custom model name"
-            aria-label="Custom model input"
-            disabled={!provider}
-          />
-        )}
       </div>
     </div>
   );

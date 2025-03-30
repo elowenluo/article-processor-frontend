@@ -1,0 +1,12 @@
+@import "../../../styles/variables";
+
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  > * {
+    flex: 1 1 250px;
+  }
+}

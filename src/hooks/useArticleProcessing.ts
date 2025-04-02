@@ -27,55 +27,7 @@ export const useArticleProcessing = () => {
     jobId: null,
   });
 
-  // Process articles with selected API
-  const processArticlesHandler = useCallback(
-    async (urls: string[], apiConfig: ApiConfig) => {
-      try {
-        setState((prev) => ({ ...prev, isProcessing: true, error: null }));
-
-        const response = await processArticles(urls, apiConfig);
-
-        setState((prev) => ({
-          ...prev,
-          jobId: response.jobId ?? null,
-        }));
-
-        // Poll for results
-        if (response.jobId) {
-          pollJobResults(response.jobId);
-        }
-      } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          isProcessing: false,
-          error:
-            error instanceof Error
-              ? error.message
-              : "An unknown error occurred",
-        }));
-      }
-    },
-    []
-  );
-
-  // Load results for a specific job ID
-  const loadResults = useCallback(async (jobId: string) => {
-    try {
-      setState((prev) => ({ ...prev, isProcessing: true, error: null, jobId }));
-
-      // Poll for results
-      pollJobResults(jobId);
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        isProcessing: false,
-        error:
-          error instanceof Error ? error.message : "An unknown error occurred",
-      }));
-    }
-  }, []);
-
-  // Poll for job results
+  // Poll for job results - moved to the top to avoid initialization error
   const pollJobResults = useCallback(async (jobId: string) => {
     try {
       const response = await getJobResults(jobId);
@@ -105,6 +57,54 @@ export const useArticleProcessing = () => {
       }));
     }
   }, []);
+
+  // Process articles with selected API
+  const processArticlesHandler = useCallback(
+    async (urls: string[], apiConfig: ApiConfig) => {
+      try {
+        setState((prev) => ({ ...prev, isProcessing: true, error: null }));
+
+        const response = await processArticles(urls, apiConfig);
+
+        setState((prev) => ({
+          ...prev,
+          jobId: response.jobId ?? null,
+        }));
+
+        // Poll for results
+        if (response.jobId) {
+          pollJobResults(response.jobId);
+        }
+      } catch (error) {
+        setState((prev) => ({
+          ...prev,
+          isProcessing: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred",
+        }));
+      }
+    },
+    [pollJobResults]
+  );
+
+  // Load results for a specific job ID
+  const loadResults = useCallback(async (jobId: string) => {
+    try {
+      setState((prev) => ({ ...prev, isProcessing: true, error: null, jobId }));
+
+      // Poll for results
+      pollJobResults(jobId);
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        isProcessing: false,
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      }));
+    }
+  }, [pollJobResults]);
 
   // Update an article
   const updateArticle = useCallback(

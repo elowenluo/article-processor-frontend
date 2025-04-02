@@ -3,6 +3,8 @@ import Select from "../../UI/Select";
 import styles from "./StandardApiSection.module.scss";
 import { ApiProvider } from "../../../types";
 
+type Model = string;
+
 interface StandardApiSectionProps {
   provider: ApiProvider;
   model: string;
@@ -26,7 +28,7 @@ const StandardApiSection: React.FC<StandardApiSectionProps> = ({
   onProviderChange,
   onModelChange,
   availableModels,
-}) => {
+}: StandardApiSectionProps) => {
   const providerOptions = [
     { value: "", label: "-- Select Provider --" },
     { value: "openai", label: "OpenAI" },
@@ -39,6 +41,12 @@ const StandardApiSection: React.FC<StandardApiSectionProps> = ({
     ...availableModels.map((model) => ({ value: model, label: model })),
   ];
 
+  const handleModelChange = (value: Model) => {
+    onModelChange(value);
+  };
+
+
+
   return (
     <div id="standard-api-section">
       <div className={styles.formRow}>
@@ -47,7 +55,8 @@ const StandardApiSection: React.FC<StandardApiSectionProps> = ({
           label="LLM Provider:"
           options={providerOptions}
           value={provider}
-          onChange={(value) => onProviderChange(value as ApiProvider)}
+          onChange={(value: string) => onProviderChange(value as ApiProvider)}
+          aria-label="LLM Provider select"
         />
 
         <Select
@@ -55,8 +64,9 @@ const StandardApiSection: React.FC<StandardApiSectionProps> = ({
           label="Model:"
           options={modelSelectOptions}
           value={model}
-          onChange={onModelChange}
+          onChange={handleModelChange}
           disabled={!provider}
+          aria-label="Model select"
         />
       </div>
     </div>

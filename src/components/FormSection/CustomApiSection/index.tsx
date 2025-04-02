@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../../UI/Input";
 import Select from "../../UI/Select";
 import styles from "./CustomApiSection.module.scss";
@@ -41,10 +41,52 @@ const CustomApiSection: React.FC<CustomApiSectionProps> = ({
     { value: "claude", label: "Anthropic" },
   ];
 
+  // Track if custom model option is selected
+  const [isCustomModelSelected, setIsCustomModelSelected] = useState(model === "custom");
+  // Store the actual custom model name
+  const [customModelName, setCustomModelName] = useState("");
+
+  // Compute whether to show the custom model input field
+  const showCustomModelInput = isCustomModelSelected;
+
   const modelSelectOptions = [
     { value: "", label: "-- Select Model --" },
     ...availableModels.map((model) => ({ value: model, label: model })),
+    { value: "custom", label: "Custom Model" },
   ];
+
+  const handleModelChange = (value: string) => {
+    if (value === "custom") {
+      // When custom is selected, set the flag to show the input field
+      setIsCustomModelSelected(true);
+      // If we have a previously entered custom model name, use it
+      if (customModelName) {
+        onModelChange(customModelName);
+      } else {
+        // Otherwise just pass "custom" to parent
+        onModelChange("custom");
+      }
+    } else {
+      // For standard models, hide the custom input
+      setIsCustomModelSelected(false);
+      // Clear any custom model name when switching away
+      setCustomModelName("");
+      // Pass the selected model to parent
+      onModelChange(value);
+    }
+  };
+
+  const handleCustomModelChange = (value: string) => {
+    // Update the custom model name
+    setCustomModelName(value);
+    // Pass the actual custom model name to parent
+    if (value) {
+      onModelChange(value);
+    } else {
+      // If empty, pass "custom" to maintain the custom selection state
+      onModelChange("custom");
+    }
+  };
 
   return (
     <div id="custom-api-section">
@@ -72,9 +114,21 @@ const CustomApiSection: React.FC<CustomApiSectionProps> = ({
           label="Model:"
           options={modelSelectOptions}
           value={model}
-          onChange={onModelChange}
+          onChange={handleModelChange}
           disabled={!provider}
         />
+
+        {showCustomModelInput && (
+          <Input
+            id="custom-model-name"
+            label="Custom Model Name:"
+            value={customModelName}
+            onChange={(e) => handleCustomModelChange(e.target.value)}
+            placeholder="Enter custom model name"
+            aria-label="Custom model input"
+            disabled={!provider}
+          />
+        )}
       </div>
     </div>
   );

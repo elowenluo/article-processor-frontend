@@ -1,6 +1,6 @@
 import { Article } from "./article.types";
 
-export type ApiProvider = "openai" | "google" | "claude" | "";
+export type ApiProvider = "openai" | "google" | "claude" | "grok" | "";
 export type ApiType = "standard" | "custom";
 
 export interface ApiConfig {

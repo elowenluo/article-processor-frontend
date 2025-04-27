@@ -39,6 +39,7 @@ const CustomApiSection: React.FC<CustomApiSectionProps> = ({
     { value: "openai", label: "OpenAI" },
     { value: "google", label: "Google AI Studio" },
     { value: "claude", label: "Anthropic" },
+    { value: "grok", label: "Grok" },
   ];
 
   // Track if custom model option is selected

@@ -74,12 +74,15 @@ const FormSection: React.FC<FormSectionProps> = ({
 
   // Store models for each provider in localStorage to avoid repeated fetching
   const [providerModels] = useLocalStorage<Record<ApiProvider, string[]>>(
-    "article-processor-provider-models", {
-    openai: [],
-    google: [],
-    claude: [],
-    "": [],
-  });
+    "article-processor-provider-models",
+    {
+      openai: [],
+      google: [],
+      claude: [],
+      grok: [],
+      "": [],
+    }
+  );
 
   // Update individual form fields
   const updateFormField = <K extends keyof FormState>(
@@ -94,75 +97,86 @@ const FormSection: React.FC<FormSectionProps> = ({
 
   // Set URL value
   const setUrls = (value: string) => {
-    updateFormField('urls', value);
+    updateFormField("urls", value);
   };
 
   // Set API type
   const setApiType = (type: ApiType) => {
-    updateFormField('apiType', type);
+    updateFormField("apiType", type);
   };
 
   // Set standard provider
   const setStandardProvider = (provider: ApiProvider) => {
-    updateFormField('standardProvider', provider);
+    updateFormField("standardProvider", provider);
   };
 
   // Set standard model
   const setStandardModel = (model: string) => {
-    updateFormField('standardModel', model);
+    updateFormField("standardModel", model);
   };
 
   // Set custom provider
   const setCustomProvider = (provider: ApiProvider) => {
-    updateFormField('customProvider', provider);
+    updateFormField("customProvider", provider);
   };
 
   // Set custom model
   const setCustomModel = (model: string) => {
-    updateFormField('customModel', model);
+    updateFormField("customModel", model);
   };
 
   // Set custom URL
   const setCustomUrl = (url: string) => {
-    updateFormField('customUrl', url);
+    updateFormField("customUrl", url);
   };
 
   // Set API key
   const setApiKey = (key: string) => {
-    updateFormField('apiKey', key);
+    updateFormField("apiKey", key);
   };
 
   // Form validation
   const isFormValid = () => {
-    const urlsValid = urls.trim() !== '';
-    const apiKeyValid = apiKey.trim() !== '';
-    
-    if (apiType === 'standard') {
-      return urlsValid && apiKeyValid && standardProvider !== '' && standardModel !== '';
+    const urlsValid = urls.trim() !== "";
+    const apiKeyValid = apiKey.trim() !== "";
+
+    if (apiType === "standard") {
+      return (
+        urlsValid &&
+        apiKeyValid &&
+        standardProvider !== "" &&
+        standardModel !== ""
+      );
     } else {
-      return urlsValid && apiKeyValid && customProvider !== '' && customModel !== '' && customUrl.trim() !== '';
+      return (
+        urlsValid &&
+        apiKeyValid &&
+        customProvider !== "" &&
+        customModel !== "" &&
+        customUrl.trim() !== ""
+      );
     }
   };
 
   // Form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isFormValid()) return;
-    
+
     const urlList = urls
-      .split('\n')
-      .map(url => url.trim())
-      .filter(url => url !== '');
-    
+      .split("\n")
+      .map((url) => url.trim())
+      .filter((url) => url !== "");
+
     const apiConfig: ApiConfig = {
       type: apiType,
-      provider: apiType === 'standard' ? standardProvider : customProvider,
-      model: apiType === 'standard' ? standardModel : customModel,
+      provider: apiType === "standard" ? standardProvider : customProvider,
+      model: apiType === "standard" ? standardModel : customModel,
       apiKey,
-      customUrl: apiType === 'custom' ? customUrl : undefined
+      customUrl: apiType === "custom" ? customUrl : undefined,
     };
-    
+
     onSubmit(urlList, apiConfig);
   };
 
@@ -175,6 +189,8 @@ const FormSection: React.FC<FormSectionProps> = ({
         return ["gemini-1.5-pro", "gemini-2.0-flash"];
       case "claude":
         return ["claude-3-5-haiku", "claude-3-5-sonnet", "claude-3-7-sonnet"];
+      case "grok":
+        return ["grok-3-beta"];
       default:
         return [];
     }

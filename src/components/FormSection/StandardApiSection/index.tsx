@@ -32,6 +32,7 @@ const StandardApiSection: React.FC<StandardApiSectionProps> = ({
     { value: "openai", label: "OpenAI" },
     { value: "google", label: "Google AI Studio" },
     { value: "claude", label: "Anthropic" },
+    { value: "grok", label: "Grok" },
   ];
 
   const modelSelectOptions = [

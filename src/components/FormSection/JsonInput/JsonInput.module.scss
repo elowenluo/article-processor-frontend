@@ -1,0 +1,29 @@
+@import "../../../styles/variables";
+
+.jsonInput {
+  margin-bottom: $spacing-md;
+}
+
+.label {
+  display: block;
+  margin-bottom: $spacing-xs;
+  font-weight: $font-weight-medium;
+  color: $text-color;
+  font-size: $font-size-small;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 300px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: $font-size-small;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.hint {
+  margin-top: $spacing-xs;
+  font-size: $font-size-small;
+  color: $footer-text;
+  line-height: 1.4;
+}

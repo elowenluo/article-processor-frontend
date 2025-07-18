@@ -8,6 +8,7 @@ import CustomApiSection from "./CustomApiSection";
 import UrlsInput from "./UrlsInput";
 import ApiKeyInput from "./ApiKeyInput";
 import JobIdRecovery from "./JobIdRecovery";
+import JsonInput from "./JsonInput";
 import styles from "./FormSection.module.scss";
 import { ApiConfig, ApiProvider, ApiType } from "../../types";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -15,7 +16,9 @@ import { useLocalStorage } from "../../hooks/useLocalStorage";
 // Define the form state shape for localStorage
 interface FormState {
   apiType: ApiType;
+  inputType: "urls" | "json";
   urls: string;
+  jsonData: string;
   apiKey: string;
   standardProvider: ApiProvider;
   standardModel: string;
@@ -26,6 +29,7 @@ interface FormState {
 
 interface FormSectionProps {
   onSubmit: (urls: string[], apiConfig: ApiConfig) => void;
+  onJsonSubmit: (jsonData: string) => void;
   onLoadResults: (jobId: string) => void;
   isProcessing: boolean;
 }
@@ -39,13 +43,16 @@ interface FormSectionProps {
  */
 const FormSection: React.FC<FormSectionProps> = ({
   onSubmit,
+  onJsonSubmit,
   onLoadResults,
   isProcessing,
 }) => {
   // Initial form state
   const initialFormState: FormState = {
     apiType: "standard",
+    inputType: "urls",
     urls: "",
+    jsonData: "",
     apiKey: "",
     standardProvider: "",
     standardModel: "",
@@ -63,7 +70,9 @@ const FormSection: React.FC<FormSectionProps> = ({
   // Destructure form state for easier access
   const {
     apiType,
+    inputType,
     urls,
+    jsonData,
     apiKey,
     standardProvider,
     standardModel,
@@ -98,6 +107,16 @@ const FormSection: React.FC<FormSectionProps> = ({
   // Set URL value
   const setUrls = (value: string) => {
     updateFormField("urls", value);
+  };
+
+  // Set input type
+  const setInputType = (type: "urls" | "json") => {
+    updateFormField("inputType", type);
+  };
+
+  // Set JSON data
+  const setJsonData = (value: string) => {
+    updateFormField("jsonData", value);
   };
 
   // Set API type
@@ -137,6 +156,12 @@ const FormSection: React.FC<FormSectionProps> = ({
 
   // Form validation
   const isFormValid = () => {
+    // For JSON input, we only need valid JSON data
+    // if (inputType === "json") {
+    //   return jsonData.trim() !== "";
+    // }
+
+    // For URL input, we need URLs and API configuration
     const urlsValid = urls.trim() !== "";
     const apiKeyValid = apiKey.trim() !== "";
 
@@ -164,6 +189,13 @@ const FormSection: React.FC<FormSectionProps> = ({
 
     if (!isFormValid()) return;
 
+    // Handle JSON input
+    if (inputType === "json") {
+      onJsonSubmit(jsonData);
+      return;
+    }
+
+    // Handle URL input
     const urlList = urls
       .split("\n")
       .map((url) => url.trim())
@@ -206,31 +238,58 @@ const FormSection: React.FC<FormSectionProps> = ({
   return (
     <section className={styles.formSection}>
       <form onSubmit={handleSubmit}>
-        <UrlsInput urls={urls} onChange={setUrls} />
+        {/* Input type toggle */}
+        <div className={styles.inputToggle}>
+          <label className={styles.toggleLabel}>输入方式:</label>
+          <div className={styles.toggleButtons}>
+            <Button
+              type="button"
+              variant={inputType === "urls" ? "primary" : "secondary"}
+              onClick={() => setInputType("urls")}
+            >
+              URL 输入
+            </Button>
+            <Button
+              type="button"
+              variant={inputType === "json" ? "primary" : "secondary"}
+              onClick={() => setInputType("json")}
+            >
+              JSON 数据
+            </Button>
+          </div>
+        </div>
 
-        <ApiToggle activeApi={apiType} onToggle={setApiType} />
+        {inputType === "urls" ? (
+          <>
+            <UrlsInput urls={urls} onChange={setUrls} />
 
-        {apiType === "standard" ? (
-          <StandardApiSection
-            provider={standardProvider}
-            model={standardModel}
-            onProviderChange={setStandardProvider}
-            onModelChange={setStandardModel}
-            availableModels={getModelsForProvider(standardProvider)}
-          />
+            <ApiToggle activeApi={apiType} onToggle={setApiType} />
+
+            {apiType === "standard" ? (
+              <StandardApiSection
+                provider={standardProvider}
+                model={standardModel}
+                onProviderChange={setStandardProvider}
+                onModelChange={setStandardModel}
+                availableModels={getModelsForProvider(standardProvider)}
+              />
+            ) : (
+              <CustomApiSection
+                provider={customProvider}
+                model={customModel}
+                customUrl={customUrl}
+                onProviderChange={setCustomProvider}
+                onModelChange={setCustomModel}
+                onCustomUrlChange={setCustomUrl}
+                availableModels={getModelsForProvider(customProvider)}
+              />
+            )}
+
+            <ApiKeyInput apiKey={apiKey} onChange={setApiKey} />
+          </>
         ) : (
-          <CustomApiSection
-            provider={customProvider}
-            model={customModel}
-            customUrl={customUrl}
-            onProviderChange={setCustomProvider}
-            onModelChange={setCustomModel}
-            onCustomUrlChange={setCustomUrl}
-            availableModels={getModelsForProvider(customProvider)}
-          />
+          <JsonInput jsonData={jsonData} onChange={setJsonData} />
         )}
-
-        <ApiKeyInput apiKey={apiKey} onChange={setApiKey} />
 
         <Button
           type="submit"
@@ -238,7 +297,7 @@ const FormSection: React.FC<FormSectionProps> = ({
           fullWidth
           className={styles.submitButton}
         >
-          {isProcessing ? "Processing..." : "Process Articles"}
+          {isProcessing ? "Processing..." : inputType === "json" ? "Parse JSON Data" : "Process Articles"}
         </Button>
 
         <JobIdRecovery onLoadResults={onLoadResults} />

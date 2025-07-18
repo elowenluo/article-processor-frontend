@@ -17,6 +17,7 @@ const ArticleProcessor: React.FC = () => {
     error,
     jobId,
     processArticles,
+    processJsonData,
     loadResults,
     updateArticle,
     deleteArticle,
@@ -32,6 +33,7 @@ const ArticleProcessor: React.FC = () => {
         error={error}
         jobId={jobId}
         onSubmit={processArticles}
+        onJsonSubmit={processJsonData}
         onLoadResults={loadResults}
         onArticleChange={updateArticle}
         onDeleteArticle={deleteArticle}

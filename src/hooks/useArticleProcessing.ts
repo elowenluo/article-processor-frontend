@@ -149,9 +149,59 @@ export const useArticleProcessing = () => {
     }
   }, [state.articles]);
 
+  // Process JSON data directly
+  const processJsonData = useCallback((jsonData: string) => {
+    try {
+      setState((prev) => ({ ...prev, isProcessing: true, error: null }));
+      
+      const parsedData = JSON.parse(jsonData);
+      
+      // Validate JSON structure
+      if (!parsedData.status || !parsedData.results || !Array.isArray(parsedData.results)) {
+        throw new Error("Invalid JSON format. Expected format: { status: 'completed', jobId: 'string', results: [...] }");
+      }
+      
+      // Validate articles structure
+      const validatedArticles = parsedData.results.map((article: unknown, index: number) => {
+        if (typeof article !== 'object' || article === null) {
+          throw new Error(`Article ${index + 1} is not a valid object`);
+        }
+        
+        const articleObj = article as Record<string, unknown>;
+        
+        if (!articleObj.title || !articleObj.content) {
+          throw new Error(`Article ${index + 1} is missing required fields (title, content)`);
+        }
+        
+        return {
+          title: String(articleObj.title),
+          content: String(articleObj.content),
+          summary: String(articleObj.summary || ""),
+          tags: Array.isArray(articleObj.tags) ? articleObj.tags.map(String) : [],
+          categories: Array.isArray(articleObj.categories) ? articleObj.categories.map(String) : [],
+        };
+      });
+      
+      setState((prev) => ({
+        ...prev,
+        articles: validatedArticles,
+        isProcessing: false,
+        jobId: parsedData.jobId || "json-import",
+      }));
+      
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        isProcessing: false,
+        error: error instanceof Error ? error.message : "Failed to parse JSON data",
+      }));
+    }
+  }, []);
+
   return {
     ...state,
     processArticles: processArticlesHandler,
+    processJsonData,
     loadResults,
     updateArticle,
     deleteArticle,

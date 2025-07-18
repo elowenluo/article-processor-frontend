@@ -12,6 +12,7 @@ interface MainProps {
   error: string | null;
   jobId: string | null;
   onSubmit: (urls: string[], apiConfig: ApiConfig) => void;
+  onJsonSubmit: (jsonData: string) => void;
   onLoadResults: (jobId: string) => void;
   onArticleChange: (index: number, updatedArticle: Article) => void;
   onDeleteArticle: (index: number) => void;
@@ -27,6 +28,7 @@ const Main: React.FC<MainProps> = ({
   error,
   jobId,
   onSubmit,
+  onJsonSubmit,
   onLoadResults,
   onArticleChange,
   onDeleteArticle,
@@ -37,6 +39,7 @@ const Main: React.FC<MainProps> = ({
       <div className={styles.formColumn}>
         <FormSection
           onSubmit={onSubmit}
+          onJsonSubmit={onJsonSubmit}
           onLoadResults={onLoadResults}
           isProcessing={isProcessing}
         />
